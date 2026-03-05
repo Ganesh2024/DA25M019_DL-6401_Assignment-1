@@ -1,0 +1,21 @@
+{
+  "dataset": "mnist",
+  "epochs": 10,
+  "batch_size": 64,
+  "loss": "cross_entropy",
+  "optimizer": "adam",
+  "learning_rate": 0.001,
+  "weight_decay": 0.0,
+  "num_layers": 3,
+  "hidden_size": 128,
+  "activation": "relu",
+  "weight_init": "xavier",
+  "wandb_project": "DA6401-Assignment1",
+  "wandb_entity": null,
+  "wandb_run_name": null,
+  "use_wandb": true,
+  "model_save_path": "models/best_model.npy",
+  "config_save_path": "models/best_config.json",
+  "test_f1": 0.9726467634931962,
+  "test_accuracy": 0.9728
+}

@@ -1,0 +1,16 @@
+# W&B local run logs (already synced to cloud)
+notebooks/wandb/
+src/wandb/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Data cache
+src/data/
+
+# Environment
+.env
+*.egg-info/

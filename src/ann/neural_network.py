@@ -309,6 +309,16 @@ class NeuralNetwork:
 
     def set_weights(self, weight_dict: dict):
         """Load weights from a dictionary (e.g. loaded from .npy file)."""
+        # Handle case where a NeuralNetwork object is passed instead of a dict
+        if isinstance(weight_dict, NeuralNetwork):
+            weight_dict = weight_dict.get_weights()
+        
+        # Ensure we have a dictionary
+        if not isinstance(weight_dict, dict):
+            raise TypeError(
+                f"weight_dict must be a dict or NeuralNetwork object, got {type(weight_dict).__name__}"
+            )
+        
         for i, layer in enumerate(self.layers):
             w_key = f"W{i}"
             b_key = f"b{i}"

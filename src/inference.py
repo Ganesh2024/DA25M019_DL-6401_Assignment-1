@@ -154,13 +154,37 @@ def _apply_config(args, config_path: str):
 # Load model
 # -----------------------------------------------------------------------
 
-def load_model(model_path: str) -> NeuralNetwork:
+def load_model(model_path: str, config_path: str = None) -> NeuralNetwork:
     """
     Load trained model from disk.
-    Reads config JSON from the same directory as the .npy file.
+    Reads config JSON from specified path or same directory as the .npy file.
+    
+    Parameters
+    ----------
+    model_path : str
+        Path to the .npy model weights file
+    config_path : str, optional
+        Path to best_config.json. If None, looks in model directory.
     """
-    model_dir = os.path.dirname(os.path.abspath(model_path))
-    config_path = os.path.join(model_dir, 'best_config.json')
+    if config_path is None:
+        # Try multiple possible locations for config
+        possible_paths = [
+            os.path.join(os.path.dirname(os.path.abspath(model_path)), 'best_config.json'),
+            'best_config.json',
+            '../models/best_config.json',
+            'src/best_config.json',
+        ]
+        
+        config_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                config_path = path
+                break
+        
+        if config_path is None:
+            raise FileNotFoundError(
+                f"Could not find best_config.json in any of: {possible_paths}"
+            )
 
     with open(config_path) as f:
         cfg = json.load(f)
@@ -217,7 +241,7 @@ def main() -> dict:
     # ------------------------------------------------------------------
     # 2. Build model and load weights
     # ------------------------------------------------------------------
-    model = load_model(args.model_path)
+    model = load_model(args.model_path, config_path=args.config_path)
 
     # ------------------------------------------------------------------
     # 3. Evaluate

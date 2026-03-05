@@ -69,11 +69,13 @@ class ObjectiveFunction:
         Compute dL/d(logits).
 
         For cross-entropy + softmax the combined gradient simplifies to:
-            (softmax(logits) - y_one_hot) / batch_size
+            (softmax(logits) - y_one_hot)
 
         For MSE + softmax the gradient is derived via chain rule:
             dL/dz_i = sum_j [ dL/dp_j * dp_j/dz_i ]
-        where dL/dp_j = 2*(p_j - y_j)/batch  and  dp_j/dz_i = p_j*(delta_ij - p_i)
+        where dL/dp_j = 2*(p_j - y_j) and  dp_j/dz_i = p_j*(delta_ij - p_i)
+
+        Note: Division by batch_size happens in layer.backward(), not here.
 
         Returns
         -------
@@ -84,11 +86,11 @@ class ObjectiveFunction:
         probs = self._softmax(logits)
 
         if self.name == "cross_entropy":
-            # Combined softmax + cross-entropy gradient
-            grad = (probs - y_oh) / batch_size
+            # Combined softmax + cross-entropy gradient (no batch division here)
+            grad = probs - y_oh
         else:  # mean_squared_error
-            # dL/dp = 2*(p - y) / batch_size
-            dl_dp = 2.0 * (probs - y_oh) / batch_size
+            # dL/dp = 2*(p - y) (no batch division here)
+            dl_dp = 2.0 * (probs - y_oh)
             # Jacobian of softmax: p_i*(delta_ij - p_j)
             # grad_z_i = sum_j dl_dp_j * p_j*(delta_ij - p_i)
             #          = p_i * (dl_dp_i - sum_j dl_dp_j * p_j)

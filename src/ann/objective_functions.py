@@ -64,38 +64,17 @@ class ObjectiveFunction:
     # Backward — gradient of loss w.r.t. logits
     # ------------------------------------------------------------------
 
-    def backward(self, logits: np.ndarray, y_true: np.ndarray) -> np.ndarray:
-        """
-        Compute dL/d(logits).
-
-        For cross-entropy + softmax the combined gradient simplifies to:
-            (softmax(logits) - y_one_hot)
-
-        For MSE + softmax the gradient is derived via chain rule:
-            dL/dz_i = sum_j [ dL/dp_j * dp_j/dz_i ]
-        where dL/dp_j = 2*(p_j - y_j) and  dp_j/dz_i = p_j*(delta_ij - p_i)
-
-        Note: Division by batch_size happens in layer.backward(), not here.
-
-        Returns
-        -------
-        grad : np.ndarray, shape (batch, num_classes)
-        """
+    def backward(self, logits, y_true):
         batch_size = logits.shape[0]
         y_oh  = self._to_one_hot(y_true, logits.shape[1])
         probs = self._softmax(logits)
 
         if self.name == "cross_entropy":
-            # Combined softmax + cross-entropy gradient (no batch division here)
-            grad = probs - y_oh
-        else:  # mean_squared_error
-            # dL/dp = 2*(p - y) (no batch division here)
+            grad = (probs - y_oh) / batch_size   # ← add / batch_size
+        else:
             dl_dp = 2.0 * (probs - y_oh)
-            # Jacobian of softmax: p_i*(delta_ij - p_j)
-            # grad_z_i = sum_j dl_dp_j * p_j*(delta_ij - p_i)
-            #          = p_i * (dl_dp_i - sum_j dl_dp_j * p_j)
-            dot = np.sum(dl_dp * probs, axis=1, keepdims=True)  # (batch, 1)
-            grad = probs * (dl_dp - dot)
+            dot = np.sum(dl_dp * probs, axis=1, keepdims=True)
+            grad = probs * (dl_dp - dot) / batch_size  # ← add / batch_size
         return grad
 
     # ------------------------------------------------------------------

@@ -45,8 +45,15 @@ class NeuralNetwork:
         input_dim  = 784   # 28×28 flattened
         output_dim = 10    # 10 classes
 
-        self.num_hidden  = cli_args.num_layers
-        self.hidden_size = cli_args.hidden_size
+        # self.num_hidden  = cli_args.num_layers
+        # self.hidden_size = cli_args.hidden_size
+        
+        # Support both --num_layers and --num_hidden_layers attribute names
+        self.num_hidden  = getattr(cli_args, 'num_layers', None) or getattr(cli_args, 'num_hidden_layers', 3)
+        self.hidden_size = getattr(cli_args, 'hidden_size', 128)
+        if isinstance(self.hidden_size, list):
+            self.hidden_size = self.hidden_size[0]
+
         self.activation  = cli_args.activation
         self.weight_init = cli_args.weight_init
         self.weight_decay = getattr(cli_args, "weight_decay", 0.0)

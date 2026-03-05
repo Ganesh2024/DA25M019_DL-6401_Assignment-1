@@ -130,12 +130,12 @@ def parse_arguments():
     # Model output
     parser.add_argument(
         "--model_save_path",
-        type=str, default="../models/best_model.npy",
+        type=str, default="best_model.npy",
         help="Relative path to save the best model weights (.npy).",
     )
     parser.add_argument(
         "--config_save_path",
-        type=str, default="../models/best_config.json",
+        type=str, default="best_config.json",
         help="Relative path to save the best model config (.json).",
     )
 

@@ -13,9 +13,9 @@
   "wandb_project": "DA6401-Assignment1",
   "wandb_entity": null,
   "wandb_run_name": null,
-  "use_wandb": true,
-  "model_save_path": "models/best_model.npy",
-  "config_save_path": "models/best_config.json",
-  "test_f1": 0.9726467634931962,
-  "test_accuracy": 0.9728
+  "use_wandb": false,
+  "model_save_path": "../models/best_model.npy",
+  "config_save_path": "../models/best_config.json",
+  "test_f1": 0.9737536417541328,
+  "test_accuracy": 0.9739
 }

@@ -87,8 +87,8 @@ def parse_arguments():
     )
     parser.add_argument(
         "-sz", "--hidden_size",
-        type=int, default=128,
-        help="Number of neurons in each hidden layer.",
+        type=int, nargs="+", default=[128],
+        help="Number of neurons in each hidden layer (list or single value).",
     )
     parser.add_argument(
         "-a", "--activation",
@@ -130,12 +130,12 @@ def parse_arguments():
     # Model output
     parser.add_argument(
         "--model_save_path",
-        type=str, default="models/best_model.npy",
+        type=str, default="../models/best_model.npy",
         help="Relative path to save the best model weights (.npy).",
     )
     parser.add_argument(
         "--config_save_path",
-        type=str, default="models/best_config.json",
+        type=str, default="../models/best_config.json",
         help="Relative path to save the best model config (.json).",
     )
 
@@ -148,6 +148,9 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
+    # Flatten hidden_size list to single int (use first value)
+    if isinstance(args.hidden_size, list):
+        args.hidden_size = args.hidden_size[0]
 
     # ------------------------------------------------------------------
     # 1. Load data

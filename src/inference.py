@@ -52,7 +52,7 @@ def parse_arguments():
     # Model & config paths
     parser.add_argument(
         "--model_path",
-        type=str, default="models/best_model.npy",
+        type=str, default="../models/best_model.npy",
         help="Relative path to saved model weights (.npy).",
     )
     parser.add_argument(
@@ -154,19 +154,22 @@ def _apply_config(args, config_path: str):
 # Load model
 # -----------------------------------------------------------------------
 
-def load_model(model_path: str, args) -> NeuralNetwork:
+def load_model(model_path: str) -> NeuralNetwork:
     """
-    Reconstruct NeuralNetwork from args and load weights from model_path.
-
-    Parameters
-    ----------
-    model_path : str  — path to .npy file containing weight dict
-    args       : argparse.Namespace with architecture attributes
-
-    Returns
-    -------
-    model : NeuralNetwork with loaded weights
+    Load trained model from disk.
+    Reads config JSON from the same directory as the .npy file.
     """
+    model_dir = os.path.dirname(os.path.abspath(model_path))
+    config_path = os.path.join(model_dir, 'best_config.json')
+
+    with open(config_path) as f:
+        cfg = json.load(f)
+
+    args = argparse.Namespace(**{k: v for k, v in cfg.items()
+                                 if k in ('dataset', 'epochs', 'batch_size',
+                                           'learning_rate', 'optimizer', 'num_layers',
+                                           'hidden_size', 'activation', 'weight_init',
+                                           'weight_decay', 'loss')})
     model = NeuralNetwork(args)
     model.load(model_path)
     return model
@@ -214,7 +217,7 @@ def main() -> dict:
     # ------------------------------------------------------------------
     # 2. Build model and load weights
     # ------------------------------------------------------------------
-    model = load_model(args.model_path, args)
+    model = load_model(args.model_path)
 
     # ------------------------------------------------------------------
     # 3. Evaluate
